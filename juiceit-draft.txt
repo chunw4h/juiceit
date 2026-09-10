@@ -1,0 +1,34 @@
+# PART 1: Installing Miniconda on macOS
+# Please note that on ANACONDA's Documentation, as of August 15, 2025 -- No more packages are being built for Intel Mac computers "OSX-64 / macOSX-x86-64" but are still available at https://repo.anaconda.com/miniconda
+
+#!/usr/bin/zsh
+
+# Exit immediately if a command exits with a non-zero status
+set -e
+
+# Treat unset variables as an error
+set -u
+
+
+# Main logic starts here
+
+# Installation Step 1
+curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
+bash ~/Miniconda3-latest-MacOSX-arm64.sh
+
+# Installation Step 2
+# Add conda-forge to your channels for access to the latest release
+conda config --add channels conda-forge
+
+# Perhaps enforce strict conda-forge priority
+conda config --set channel_priority strict
+
+# Create and activate an environment for Orange
+conda create python=3.12 --yes --name orange3
+conda activate orange3
+
+# Install Orange
+conda install orange3
+
+# Install add-ons required for course
+conda install orange3-<addon name>
