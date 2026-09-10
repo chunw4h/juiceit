@@ -1,0 +1,49 @@
+#!/bin/zsh
+
+# Ensure script exits immediately on errors or unbound variables
+set -eu
+
+# Configuration
+MINICONDA_URL="https://anaconda.com"
+INSTALL_DIR="$HOME/miniconda3"
+INSTALLER_PATH="/tmp/miniconda_installer.sh"
+
+# Detect OS and system architecture to fetch the correct installer package
+if [[ "$(uname)" == "Darwin" ]]; then
+    MINICONDA_URL="https://anaconda.com"
+    [[ "$(uname -m)" == "arm64" ]] && MINICONDA_URL="https://anaconda.com"
+fi
+
+echo "========================================="
+echo "        Miniconda Installer Script       "
+echo "========================================="
+
+# Step 1: Download Miniconda
+echo "\n[1/4] Downloading the latest Miniconda installer..."
+if command -v curl >/dev/null 2>&1; then
+    curl -L "$MINICONDA_URL" -o "$INSTALLER_PATH"
+elif command -v wget >/dev/null 2>&1; then
+    wget "$MINICONDA_URL" -O "$INSTALLER_PATH"
+else
+    echo "❌ Error: Neither curl nor wget is installed. Please install one and try again."
+    exit 1
+fi
+
+# Step 2: Run the installer in batch mode (skips manual license prompts)
+echo "\n[2/4] Installing Miniconda to: $INSTALLER_DIR"
+echo "      (Please wait, this may take a moment...)"
+chmod +x "$INSTALLER_PATH"
+zsh "$INSTALLER_PATH" -b -p "$INSTALLER_DIR"
+
+# Step 3: Inject Conda setup configuration into the user's .zshrc profile
+echo "\n[3/4] Initializing Miniconda for Zsh..."
+"$INSTALLER_DIR/bin/conda" init zsh
+
+# Step 4: Remove temporary installation payload
+echo "\n[4/4] Cleaning up installation files..."
+rm -f "$INSTALLER_PATH"
+
+echo "\n========================================="
+echo "🎉 Miniconda installation complete!"
+echo "👉 To activate conda, run: source ~/.zshrc"
+echo "========================================="
