@@ -12,8 +12,9 @@ This repository provides a one-step automated installation script for Orange3 an
 ## Installation (One-Step)
 To install Orange3, open the **Terminal** application (press Command + Space, type "Terminal", and press Return). Copy and paste the single command below into Terminal, then press Return:
 
-```curl -fsSL https://github.com/chunw4h/juiceit/blob/be9e43eefcaaef68ac4da1934f04007d712814a2/install_orange.sh | bash```
-
+```bash
+curl -fsSL https://github.com/chunw4h/juiceit/blob/be9e43eefcaaef68ac4da1934f04007d712814a2/install_orange.sh | bash
+```
 *(Note: If you run into an issue midway or your internet drops, you can safely run this exact same command again to clean up and restart the process.)*
 
 Once the script finishes, a file called `launch_orange.command` will appear on your Desktop. **Double-click this file every time you want to start Orange.**
