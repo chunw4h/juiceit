@@ -1,5 +1,5 @@
 # JuiceIt 🍊 - An automated set-up and install script for Orange3 Data Mining on macOS.
-A simple auto-install script for Orange Data Mining software. Installation and set-up automated for ease-of-use. A self-assigned mini-project for course usage in **ITM 325 - AI for Business I** only! 
+A simple auto-install script for Orange Data Mining software. Installation and set-up automated for ease-of-use. A self-assigned mini-project for usage in **ITM 325 - AI for Business I** only! 
 
 This is by no means official nor endorsed nor affiliated with Orange and/or Anaconda.
 
@@ -30,7 +30,7 @@ Once the script finishes, a file called `launch_orange.command` will appear on y
 * **A different error appears:** Do not delete system folders or reinstall macOS. Copy or photograph the last 20-30 Terminal lines so the exact error can be checked.
 
 ## 🏁 Uninstallation (End of Semester)
-Because this setup creates an isolated course copy of Miniconda at `$HOME/miniconda3`, it does not interfere with your system files or other Anaconda installations[cite: 1]. 
+Because this setup creates an isolated course copy of Miniconda at `$HOME/miniconda3`, it does not interfere with your system files or other Anaconda installations. 
 
 To completely remove Orange and free up disk space at the end of the course, simply delete these two items:
 1. Delete the `launch_orange.command` file from your Desktop.
