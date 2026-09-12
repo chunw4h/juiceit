@@ -23,3 +23,11 @@ Once the script finishes, a file called `launch_orange.command` will appear on y
 * **The installation looks frozen:** Wait up to 30 minutess. Some steps may be quiet for several minutes. If there is still no new output, take a screenshot of the last 20-30 Terminal lines and send it into an LLM.
 * **Orange opens, but add-ons are missing:** Close Orange and ensure you are using the new Desktop launcher. Using old paths or older Anaconda installations will cause Orange to open without the course add-ons.
 * **A different error appears:** Do not delete system folders or reinstall macOS. Copy or photograph the last 20-30 Terminal lines so the exact error can be checked.
+
+## Uninstallation (End of Semester)
+Because this setup creates an isolated course copy of Miniconda at `$HOME/miniconda3`, it does not interfere with your system files or other Anaconda installations[cite: 1]. 
+
+To completely remove Orange and free up disk space at the end of the course, simply delete these two items:
+1. Delete the `launch_orange.command` file from your Desktop.
+2. Open Finder, go to your home folder (`Macintosh HD > Users > your-name`), and delete the `miniconda3` folder. 
+   *(Note: You can also use Terminal by running `rm -rf $HOME/miniconda3`)*
