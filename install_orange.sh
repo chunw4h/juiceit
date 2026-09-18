@@ -55,7 +55,7 @@ osacompile -e "do shell script \"bash -c 'source $HOME/miniconda3/etc/profile.d/
 
 # Download custom icon and force Finder refresh
 echo "Applying custom Orange icon..."
-ICNS_URL="https://raw.githubusercontent.com/chunw4h/juiceit/main/Orange3-MacOS-Icon_by-Jochen-Bernard.icns"
+ICNS_URL="https://raw.githubusercontent.com/chunw4h/juiceit/main/Orange3.icns"
 if curl -fsSL "$ICNS_URL" -o "$APP_PATH/Contents/Resources/applet.icns"; then
     touch "$APP_PATH"
     killall Finder 2>/dev/null
