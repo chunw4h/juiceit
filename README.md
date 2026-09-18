@@ -24,10 +24,10 @@ curl -fsSL https://raw.githubusercontent.com/chunw4h/juiceit/refs/heads/main/ins
 ```
 *(Note: If you run into an issue midway or your internet drops, you can safely run this exact same command again to clean up and restart the process.)*
 
-Once the script finishes, a file called `launch_orange.command` will appear on your Desktop. **Double-click this file every time you want to start Orange.**
+Once the script finishes, a file called `Orange3.app` will appear on your Desktop. **Double-click this file every time you want to start Orange.**
 
 ## 🔎 Troubleshooting
-* **The installation looks frozen:** Wait up to 30 minutess. Some steps may be quiet for several minutes. If there is still no new output, take a screenshot of the last 20-30 Terminal lines and send it into an LLM of your preferred choice.
+* **The installation looks frozen:** Wait up to 30 minutes. Some steps may be quiet for several minutes. If there is still no new output, take a screenshot of the last 20-30 Terminal lines and send it into an LLM of your preferred choice.
 * **Orange opens, but add-ons are missing:** Close Orange and ensure you are using the new Desktop launcher. Using old paths or older Anaconda installations will cause Orange to open without the course add-ons.
 * **A different error appears:** Do not delete system folders or reinstall macOS. Copy or photograph the last 20-30 Terminal lines so the exact error can be checked.
 
@@ -35,6 +35,6 @@ Once the script finishes, a file called `launch_orange.command` will appear on y
 Because this setup creates an isolated course copy of Miniconda at `$HOME/miniconda3`, it does not interfere with your system files or other Anaconda installations. 
 
 To completely remove Orange and free up disk space at the end of the course, simply delete these two items:
-1. Delete the `launch_orange.command` file from your Desktop.
+1. Delete the `Orange3.app` file from your Desktop.
 2. Open Finder, go to your home folder (`Macintosh HD > Users > your-name`), and delete the `miniconda3` folder. 
    *(Note: You can also use Terminal by running `rm -rf $HOME/miniconda3`)*
