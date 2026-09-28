@@ -18,7 +18,6 @@ The installation is sourced from 🐍 Anaconda Docs & 🍊 Orange Docs. Please s
 
 ## ⚙️ Installation (Single Step)
 To install Orange3 via Miniconda, open the **Terminal** application (press **⌘ Command + Space**, type "Terminal", and press Return). Copy and paste the single command below into Terminal, then press Return:
-
 ```
 curl -fsSL https://raw.githubusercontent.com/chunw4h/juiceit/refs/heads/main/install_orange.sh | bash
 ```

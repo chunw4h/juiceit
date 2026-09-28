@@ -1,88 +1,94 @@
 #!/bin/bash
 
-# Define where all the messy installation text will go
+# ==========================================
+# 0. UI Colors & Setup Variables
+# ==========================================
+C_RESET='\033[0m'
+C_CYAN='\033[0;36m'
+C_GREEN='\033[0;32m'
+C_YELLOW='\033[0;33m'
+C_RED='\033[0;31m'
+C_BOLD='\033[1m'
+
 SETUP_LOG="$HOME/Library/Logs/Orange3_Course.log"
-APP_PATH="$HOME/Desktop/Orange3.app"
+APP_DIR="$HOME/Applications"
+APP_PATH="$APP_DIR/Orange3.app"
+
+VERBOSE=0
+QUIET_FLAG="--quiet"
+ADDONS_CONDA="orange3-imageanalytics"
+ADDONS_PIP="Orange3-Text Orange3-Timeseries Orange3-Geo Orange3-Associate"
 
 clear
-
-echo "=================================================="
-echo "    Starting Orange3 Automated macOS Setup       "
-echo "=================================================="
-echo "Note: This process may take 20-40 minutes total."
-echo "Terminal will stay completely quiet during steps."
-echo "Please keep your Mac connected to power and internet."
-echo "--------------------------------------------------"
+echo -e "${C_CYAN}${C_BOLD}==================================================${C_RESET}"
+echo -e "${C_CYAN}${C_BOLD}    Starting Orange3 Automated macOS Setup       ${C_RESET}"
+echo -e "${C_CYAN}${C_BOLD}==================================================${C_RESET}"
 echo "A detailed technical log is being saved to:"
 echo "$SETUP_LOG"
 echo "--------------------------------------------------"
 
-# Initialize log file
 echo "Orange3 Installation Log - $(date)" > "$SETUP_LOG"
 
-# 1. Check current installation and backup if incomplete
-echo "[1/6] Checking system for previous installations..."
+run_cmd() {
+    if [ "$VERBOSE" = 1 ]; then
+        "$@" 2>&1 | tee -a "$SETUP_LOG"
+    else
+        "$@" >> "$SETUP_LOG" 2>&1
+    fi
+}
+
+echo -e "${C_CYAN}[1/6] Checking system for previous installations...${C_RESET}"
 if [ -x "$HOME/miniconda3/bin/conda" ]; then
-    echo "   ↳ Miniconda already detected. Skipping base install."
+    echo "   ↳ Miniconda already detected."
 elif [ -d "$HOME/miniconda3" ]; then
-    echo "   ↳ Incomplete installation found. Creating timestamped backup..."
+    echo "   ↳ Incomplete installation found. Creating backup..."
     mv "$HOME/miniconda3" "$HOME/miniconda3_backup_$(date +%Y%m%d_%H%M%S)" >> "$SETUP_LOG" 2>&1
 fi
 
-# 2. Download and Install Miniconda
 if [ ! -x "$HOME/miniconda3/bin/conda" ]; then
-    echo "[2/6] Downloading Miniconda installer for $(uname -m)..."
+    echo -e "${C_CYAN}[2/6] Downloading Miniconda installer for $(uname -m)...${C_RESET}"
     mkdir -p "$HOME/Downloads"
-    
-    # -sS makes curl silent but still outputs critical errors
     if ! curl -sS -f -L -o "$HOME/Downloads/Miniconda3.sh" "https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-$(uname -m).sh"; then
-        echo "   ↳ Error: Failed to download Miniconda. Check your internet connection."
+        echo -e "${C_RED}   ↳ Error: Failed to download Miniconda.${C_RESET}"
         exit 1
     fi
-    
-    echo "   ↳ Installing Miniconda silently (this takes 1-2 minutes)..."
+    echo "   ↳ Installing Miniconda (1-2 minutes)..."
     bash "$HOME/Downloads/Miniconda3.sh" -b -p "$HOME/miniconda3" >> "$SETUP_LOG" 2>&1
+else
+    echo -e "${C_CYAN}[2/6] Miniconda ready.${C_RESET}"
 fi
 
-# 3. Load Miniconda
-echo "[3/6] Initializing Conda..."
+echo -e "${C_CYAN}[3/6] Initializing Conda...${C_RESET}"
 source "$HOME/miniconda3/etc/profile.d/conda.sh"
 
-# 3.5. Environment Cleanup 
 if conda env list | grep -Eq '^[[:space:]]*orange3[[:space:]]'; then
-    echo "   ↳ Existing 'orange3' environment detected. Cleaning up..."
+    echo -e "${C_YELLOW}   ↳ Existing 'orange3' environment detected. Cleaning up...${C_RESET}"
     conda deactivate 2>/dev/null
-    conda env remove --name orange3 --yes >> "$SETUP_LOG" 2>&1
-    echo "   ↳ Old environment safely removed."
+    run_cmd conda env remove --name orange3 --yes
 fi
 
-# 4. Create Orange Environment (Conda for Core)
-echo "[4/6] Creating Orange3 environment and downloading core packages..."
+echo -e "${C_CYAN}[4/6] Creating Orange3 environment and downloading core packages...${C_RESET}"
 echo "      ☕ Please wait. This step takes 10-30 minutes."
-echo "      The screen will not change while it works in the background."
+echo "      The screen will remain quiet while it works."
 
-conda create --name orange3 --channel conda-forge --override-channels python=3.11 pip orange3 orange3-imageanalytics --yes --quiet >> "$SETUP_LOG" 2>&1
+run_cmd conda create --name orange3 --channel conda-forge --override-channels python=3.11 pip orange3 $ADDONS_CONDA --yes $QUIET_FLAG
 
-# 5. Add Course Add-ons (Pip required for Apple Silicon workaround)
-echo "[5/6] Core packages installed. Adding course add-ons via pip..."
+echo -e "${C_CYAN}[5/6] Processing course add-ons...${C_RESET}"
 conda activate orange3
-python -m pip install --upgrade --prefer-binary --quiet Orange3-Text Orange3-Timeseries Orange3-Geo Orange3-Associate >> "$SETUP_LOG" 2>&1
+run_cmd python -m pip install --upgrade --prefer-binary $QUIET_FLAG $ADDONS_PIP
 
-# Verify installation before building the launcher
 echo "   ↳ Verifying installation..."
 if ! python -c "import Orange" 2>/dev/null; then
-    echo "   ↳ Error: Orange3 failed to install correctly."
-    echo "   ↳ Please send the log file to your instructor: $SETUP_LOG"
+    echo -e "${C_RED}   ↳ Error: Orange3 failed to install correctly. Send log to instructor.${C_RESET}"
     exit 1
 fi
 
-# 6. Generate the Desktop App Launcher with Custom Icon
-echo "[6/6] Building native Desktop application launcher..."
-
+echo -e "${C_CYAN}[6/6] Building native Desktop application launcher...${C_RESET}"
+mkdir -p "$APP_DIR"
 rm -f "$HOME/Desktop/launch_orange.command"
 rm -rf "$APP_PATH"
+rm -rf "$HOME/Desktop/Orange3.app"
 
-# Compiling launcher (Now routing runtime errors to the same log file)
 osacompile -e "do shell script \"bash -c 'source $HOME/miniconda3/etc/profile.d/conda.sh && conda activate orange3 && python -m Orange.canvas >> $SETUP_LOG 2>&1 &'\"" -o "$APP_PATH" >> "$SETUP_LOG" 2>&1
 
 echo "   ↳ Applying custom Orange icon..."
@@ -94,20 +100,20 @@ if curl -sS -f -L "$ICNS_URL" -o "$ICNS_PATH" && [ -s "$ICNS_PATH" ]; then
     touch "$APP_PATH/Contents/Info.plist"
     touch "$APP_PATH"
     killall Finder 2>/dev/null
-    echo "   ↳ Custom icon applied successfully!"
+    echo -e "${C_GREEN}   ↳ Custom icon applied successfully!${C_RESET}"
 else
-    echo "   ↳ Note: Custom icon download skipped. Default app icon assigned."
+    echo -e "${C_YELLOW}   ↳ Note: Custom icon download skipped. Default app icon assigned.${C_RESET}"
 fi
 
 echo ""
-echo "=================================================="
-echo "         🎉 SETUP VERIFIED AND COMPLETE!          "
-echo "=================================================="
-echo "An app named 'Orange3.app' is now on your Desktop."
+echo -e "${C_GREEN}${C_BOLD}==================================================${C_RESET}"
+echo -e "${C_GREEN}${C_BOLD}         🎉 SETUP VERIFIED AND COMPLETE!          ${C_RESET}"
+echo -e "${C_GREEN}${C_BOLD}==================================================${C_RESET}"
+echo "An app named 'Orange3' is now installed in your Applications folder."
 echo ""
-echo "💡 IMPORTANT LAUNCH INSTRUCTIONS:"
-echo " 1. Double-click 'Orange3.app' on your Desktop to start."
+echo -e "${C_YELLOW}💡 IMPORTANT LAUNCH INSTRUCTIONS:${C_RESET}"
+echo " 1. Press Command + Space, type 'Orange3', and press Return."
 echo " 2. The first launch may take 30-60 seconds to open."
-echo " 3. Do not quit the app or double-click it repeatedly—simply wait a little."
+echo " 3. Do not quit the app or double-click it repeatedly—simply wait."
 echo " 4. No Terminal window will pop up—this is normal!"
-echo "=================================================="
+echo -e "${C_GREEN}==================================================${C_RESET}"
