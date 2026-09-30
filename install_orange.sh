@@ -93,7 +93,7 @@ osacompile -e "do shell script \"bash -c 'source $HOME/miniconda3/etc/profile.d/
 
 echo "   ↳ Applying custom Orange icon..."
 ICNS_PATH="$APP_PATH/Contents/Resources/applet.icns"
-ICNS_URL="https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/orange.icns"
+ICNS_URL="https://github.com/chunw4h/juiceit/raw/refs/heads/main/Orange3.icns"
 
 if curl -sS -f -L "$ICNS_URL" -o "$ICNS_PATH" && [ -s "$ICNS_PATH" ]; then
     xattr -cr "$APP_PATH" 2>/dev/null
@@ -107,11 +107,11 @@ fi
 
 echo ""
 echo -e "${C_GREEN}${C_BOLD}==================================================${C_RESET}"
-echo -e "${C_GREEN}${C_BOLD}         🎉 SETUP VERIFIED AND COMPLETE!          ${C_RESET}"
+echo -e "${C_GREEN}${C_BOLD}         !SETUP VERIFIED AND COMPLETE!          ${C_RESET}"
 echo -e "${C_GREEN}${C_BOLD}==================================================${C_RESET}"
 echo "An app named 'Orange3' is now installed in your Applications folder."
 echo ""
-echo -e "${C_YELLOW}💡 IMPORTANT LAUNCH INSTRUCTIONS:${C_RESET}"
+echo -e "${C_YELLOW}!! IMPORTANT LAUNCH INSTRUCTIONS:${C_RESET}"
 echo " 1. Press Command + Space, type 'Orange3', and press Return."
 echo " 2. The first launch may take 30-60 seconds to open."
 echo " 3. Do not quit the app or double-click it repeatedly—simply wait."
