@@ -1,14 +1,14 @@
 #!/bin/bash
 #
-# Orange3 Automated Setup for macOS (ITM 325) — merged version
+echo "Orange3 Automated Setup for macOS (ITM 325) — merged version"
 #
-# Usage:
-#   bash install_orange.sh              Normal setup. Reuses an existing healthy env.
-#   bash install_orange.sh --reset      Delete the orange3 env first, then rebuild.
-#   bash install_orange.sh --verbose    Show live command output (also logged).
-#   bash install_orange.sh --help
+echo "Usage: "
+echo "bash install_orange.sh              Normal setup. Reuses an existing healthy env."
+echo "bash install_orange.sh --reset      Delete the orange3 env first, then rebuild."
+echo "bash install_orange.sh --verbose    Show live command output (also logged)."
+echo "bash install_orange.sh --help"
 #
-# Requires: macOS, internet, ~30 minutes.
+echo Requires: macOS, internet, ~30 minutes.
 #
 
 set -u
