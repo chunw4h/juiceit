@@ -1,5 +1,4 @@
-# JuiceIt 🍊 - An automated set-up and install script for Orange3 Data Mining on macOS.
-A simple auto-install script for Orange Data Mining software. Installation and set-up automated for ease-of-use. 
+# JuiceIt 🍊 - A simple, easy-to-use automated set-up and install script for Orange3 Data Mining on macOS.
 
 > Note: A self-assigned mini-project for usage in **ITM 325 - AI for Business I** only! | Created with the assistance of an LLM. 
 
