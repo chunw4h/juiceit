@@ -213,23 +213,49 @@ print("Verified: Orange core + all 5 course add-ons.")
 PY
 ok "Installation verified"
 
-# --- [6/6] Native .app launcher --------------------------------------------------
+# --- [6/6] Native .app launcher + Desktop shortcut -----------------------------
 step 6 "Building the 'Orange3' app launcher..."
+
+# /Applications is reliably indexed by Spotlight; ~/Applications is not.
+# Standard (non-admin) users fall back to ~/Applications.
+APP_DIR="/Applications"
+[ -w "$APP_DIR" ] || APP_DIR="$HOME/Applications"
+APP_PATH="$APP_DIR/Orange3.app"
+MARKER=".juiceit-launcher"
+
 mkdir -p "$APP_DIR" || fail "Cannot create $APP_DIR."
-rm -rf "$APP_PATH"   # replace only our own generated app
+
+# Never delete an app we didn't build (matters more now we may sit in /Applications)
+if [ -e "$APP_PATH" ] && [ ! -e "$APP_PATH/$MARKER" ]; then
+    fail "Refusing to overwrite $APP_PATH (not created by this script). Remove it manually and re-run."
+fi
+rm -rf "$APP_PATH"
+
+# Clean up a launcher left by an older version of this script
+if [ -d "$HOME/Applications/Orange3.app" ] && [ -e "$HOME/Applications/Orange3.app/$MARKER" ]; then
+    rm -rf "$HOME/Applications/Orange3.app"
+fi
 
 INNER="source \"$CONDA_SH\" && conda activate $ENV_NAME && python -m Orange.canvas >> \"$LAUNCH_LOG\" 2>&1 &"
 osacompile -e "do shell script \"$(applescript_escape "$INNER")\"" -o "$APP_PATH" \
-    >> "$SETUP_LOG" 2>&1 || fail "Could not build the Orange3 app (osacompile failed). See log."
+    >> "$SETUP_LOG" 2>&1 || fail "Could not build the Orange3 app (osacompile failed)."
 [ -d "$APP_PATH/Contents" ] || fail "Orange3.app was not created correctly. See log."
+touch "$APP_PATH/$MARKER"
 
-# Register with LaunchServices so Spotlight finds it (best-effort)
+# Register with LaunchServices + force Spotlight import (best-effort)
 LSREG="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
 if [ -x "$LSREG" ]; then
     "$LSREG" -f "$APP_PATH" >> "$SETUP_LOG" 2>&1
 fi
+mdimport "$APP_PATH" >> "$SETUP_LOG" 2>&1 || true
 touch "$APP_PATH"
-ok "Created $APP_PATH (default macOS icon; Orange's own logo loads at first launch)"
+
+# Desktop shortcut — double-click to launch, no Spotlight needed
+if ln -sfn "$APP_PATH" "$HOME/Desktop/Orange3"; then
+    ok "Created $APP_PATH + Desktop shortcut"
+else
+    ok "Created $APP_PATH (Desktop shortcut failed)"
+fi
 
 # --- Done -------------------------------------------------------------------------
 echo ""
@@ -238,9 +264,11 @@ echo -e "${C_GREEN}${C_BOLD}       SETUP COMPLETE AND VERIFIED (6/6)         ${C
 echo -e "${C_GREEN}${C_BOLD}==================================================${C_RESET}"
 echo ""
 echo -e "${C_YELLOW}LAUNCH INSTRUCTIONS:${C_RESET}"
-echo "  1. Press Command + Space, type 'Orange3', press Return."
-echo "  2. First launch may take 30-60 seconds. Launch once and wait."
-echo "  3. No Terminal window will appear — that is normal."
+echo -e "${C_YELLOW}LAUNCH INSTRUCTIONS:${C_RESET}"
+echo "  1. Double-click 'Orange3' on your Desktop, or"
+echo "  2. Press Command + Space, type 'Orange3', press Return."
+echo "  3. First launch may take 30-60 seconds. Launch once and wait."
+echo "  4. No Terminal window will appear — that is normal."
 echo ""
 echo "  Terminal alternative (Part C of the guide):"
 echo "    source \"$CONDA_SH\""
