@@ -132,6 +132,16 @@ fi
 # --- [3/6] Initialize Conda ----------------------------------------------------
 step 3 "Initializing Conda..."
 source "$CONDA_SH" || fail "Cannot load $CONDA_SH."
+
+# Recent Miniconda versions require accepting Anaconda's channel ToS before
+# commands that consult the default channels (e.g. `conda env remove` in
+# the --reset path). Best-effort: older conda has no `tos` subcommand.
+for _tos_ch in "https://repo.anaconda.com/pkgs/main" \
+               "https://repo.anaconda.com/pkgs/r"; do
+    conda tos accept --override-channels --channel "$_tos_ch" \
+        >> "$SETUP_LOG" 2>&1 || true
+done
+
 conda --version || fail "conda command failed after sourcing."
 
 CONDA_BASE="$(conda info --base)" || fail "conda info --base failed."
