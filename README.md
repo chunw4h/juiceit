@@ -26,6 +26,7 @@ curl -fsSL https://raw.githubusercontent.com/chunw4h/juiceit/refs/heads/main/ins
 ```
 If the install is interrupted midway, you can safely run the exact same command again — it will pick up where it left off and reuse any healthy installation.
 To force a full rebuild of the course environment instead, add the `-reset` flag (see below).
+Once the script finishes, an Orange3 shortcut will appear on your Desktop, and Orange3.app will be in your Applications folder.
 
 ### Options
 
@@ -75,10 +76,10 @@ Because this setup creates an isolated course copy of Miniconda at `~/miniconda3
 
 To completely remove Orange and free up disk space, delete these two items:
 
-1. In Finder, go to your **Applications folder inside your home directory**
+1. Delete the Orange3 shortcut from your Desktop.
+2. In Finder, go to your **Applications folder inside your home directory**
    (`Macintosh HD > Users > your-name > Applications`) and delete `Orange3.app`.
 2. Open Finder, go to your home folder, and delete the `miniconda3` folder.
    (You can also use Terminal: `rm -rf "$HOME/miniconda3"`)
 
 Optional cleanup: if an earlier install was interrupted, you may also have a `miniconda3.backup.<date>` folder in your home directory — those can be deleted too.
-> Written with [StackEdit](https://stackedit.io/).
