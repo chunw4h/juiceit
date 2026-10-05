@@ -16,6 +16,7 @@ The installation is sourced from 🐍 Anaconda Docs & 🍊 Orange Docs:
 * Be prepared to wait; the entire process may take 20–40 minutes, and some steps are quiet for several minutes.
 * Do not manually download or reinstall anything beforehand — the script handles everything for you.
 * **Heads-up:** Miniconda is installed in silent batch mode, which automatically accepts the Anaconda license terms on your behalf.
+* The script also accepts conda's channel Terms of Service (conda tos accept) for Anaconda's default repositories, which recent Miniconda versions require for routine commands. The course environment itself uses only the community conda-forge channel.
 
 ## ⚙️ Installation (Single Step)
 
