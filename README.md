@@ -1,22 +1,17 @@
-# JuiceIt 🍊 — Automated Orange3 Setup for macOS
+# JuiceIt 🍊
 
-> Note: A self-assigned mini-project for usage in ITM 325 - AI for Business I only!
-> Created with the assistance of an LLM. This is by no means official nor endorsed
-> nor affiliated with Orange and/or Anaconda.
+> Note: A self-assigned mini-project for usage in ITM 325 - AI for Business I only. Created with the assistance of an LLM. This is by no means official nor endorsed nor affiliated with Orange and/or Anaconda.
 
-This repository provides a one-step automated installation script for Orange3 and all required course add-ons (**Text, Time Series, Geo, Image Analytics, and Associate**). The script automatically handles architecture detection for both Intel and Apple Silicon (M-series) Macs. It installs a course-specific copy of Miniconda at `~/miniconda3`, builds an isolated `orange3` environment, and creates a native "Orange3" launcher you can open from Spotlight. It does **not** touch other Anaconda installations on your Mac.
+This repository provides a one-step automated installation script for Orange3 and all required course add-ons (**Text, Time Series, Geo, Image Analytics, and Associate**). The script automatically handles architecture detection for both Intel and Apple Silicon (M-series) Macs. It installs a course-specific copy of Miniconda at `~/miniconda3`, builds an isolated `orange3` environment, and creates a native "Orange3" launcher you can open from Spotlight.
 
 The installation is sourced from 🐍 Anaconda Docs & 🍊 Orange Docs:
 * https://orangedatamining.com/download/#:~:text=Other%20platforms-,Anaconda,-Create%20and%20activate
 * https://www.anaconda.com/docs/getting-started/miniconda/install/mac-cli-install
 
 ## ❗️ Before You Begin
-
-* Connect your Mac to power and a stable internet connection.
-* Be prepared to wait; the entire process may take 20–40 minutes, and some steps are quiet for several minutes.
-* Do not manually download or reinstall anything beforehand — the script handles everything for you.
-* **Heads-up:** Miniconda is installed in silent batch mode, which automatically accepts the Anaconda license terms on your behalf.
-* The script also accepts conda's channel Terms of Service (conda tos accept) for Anaconda's default repositories, which recent Miniconda versions require for routine commands. The course environment itself uses only the community conda-forge channel.
+* You do not need to install nor download anything prior to running the script. It will handle all of the manual work for you. Don't worry!
+* Ensure your Mac is of adequate charge. ( > 30% will suffice.)
+* Ensure you have 5GB of storage available for this installation. Miniconda, as small as it can be, can still take up some space-- along with Orange and its' add-ons. 
 
 ## ⚙️ Installation (Single Step)
 
@@ -26,7 +21,7 @@ curl -fsSL https://raw.githubusercontent.com/chunw4h/juiceit/refs/heads/main/ins
 ```
 If the install is interrupted midway, you can safely run the exact same command again — it will pick up where it left off and reuse any healthy installation.
 To force a full rebuild of the course environment instead, add the `-reset` flag (see below).
-Once the script finishes, an Orange3 shortcut will appear on your Desktop, and Orange3.app will be in your Applications folder.
+Once the script finishes, an Orange3 shortcut will appear on your Desktop.
 
 ### Options
 
@@ -38,7 +33,7 @@ Once the script finishes, an Orange3 shortcut will appear on your Desktop, and O
 
 ## 🚀 Launching Orange
 
-Once setup completes, a launch log will appear in `~/Applications/Orange3.app`.
+Once setup completes, a launch log will appear in `~/Applications/Orange3.app`. An application will also appear on the desktop. Feel free to move it to the "~Applications" folder in Finder, or pin it to your dock-- however you prefer.
 
 1. Press ⌘ Command + Space, type `Orange3`, and press Return.
 2. The first launch may take 30–60 seconds. Be patient and wait.
