@@ -48,7 +48,19 @@ and share the output with your instructor.
 **Environment broken** – re‑run with --reset.
 
 ## Uninstallation (end of semester)
-Delete the Desktop shortcut.
-Delete ~/Applications/Orange3.app.
-Remove the sandbox Miniconda: rm -rf "$HOME/miniconda3" (or use Finder).
-Optional: delete any miniconda3.backup.* folders.
+You can remove everything the installer created in two ways:
+
+1. **Recommended** – run the provided helper script (asks for confirmation, handles all clean‑up automatically):
+   ```bash
+   bash uninstall_orange.sh
+   ```
+   Add `--force` to skip the prompts:
+   ```bash
+   bash uninstall_orange.sh --force
+   ```
+
+2. **Manual** – the original steps (kept for reference):
+   - Delete the Desktop shortcut.
+   - Delete `~/Applications/Orange3.app`.
+   - Remove the sandbox Miniconda folder: `rm -rf "$HOME/miniconda3"` (or use Finder).
+   - Optional: delete any `miniconda3.backup.*` folders.

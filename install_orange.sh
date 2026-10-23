@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 echo "Orange3 Automated Setup for macOS (ITM 325) — merged version"
 #
@@ -15,6 +15,19 @@ set -u
 set -o pipefail
 
 # --- 0. Configuration --------------------------------------------------------
+
+# Minimum free disk space (GB) required before we start downloading anything.
+REQUIRED_GB=3
+
+check_disk_space() {
+  local free_gb
+  # `df -k` reports free space in kilobytes; we convert to GB (rounded down).
+  free_gb=$(df -k "$HOME" | awk 'NR==2 {print int($4/1024/1024)}')
+  if (( free_gb < REQUIRED_GB )); then
+    fail "Not enough free disk space. Need at least ${REQUIRED_GB}GB, but only ${free_gb}GB is available in $HOME. Free up space and re‑run the installer."
+  fi
+  ok "Sufficient free disk space: ${free_gb}GB"
+}
 ENV_NAME="orange3"
 MINICONDA="$HOME/miniconda3"
 CONDA_SH="$MINICONDA/etc/profile.d/conda.sh"
@@ -82,6 +95,8 @@ done
 
 # --- Log setup ----------------------------------------------------------------
 mkdir -p "${SETUP_LOG%/*}" || fail "Cannot create log directory."
+# Verify we have enough free space before any download begins.
+check_disk_space
 
 clear
 echo -e "${C_CYAN}${C_BOLD}==================================================${C_RESET}"
@@ -114,7 +129,7 @@ if [ "$RESULT" = "C" ]; then
     case "$ARCH" in arm64|x86_64) ;; *) fail "Unsupported architecture: $ARCH" ;; esac
 
     INSTALLER="$HOME/Downloads/Miniconda3-latest-MacOSX-$ARCH.sh"
-    curl -fL --retry 3 -o "$INSTALLER" \
+    curl -fL --retry 5 --retry-delay 5 -o "$INSTALLER" \
         "https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-$ARCH.sh" \
         || fail "Download failed. Check your internet connection and re-run."
     [ -s "$INSTALLER" ] || fail "Downloaded installer is empty."
