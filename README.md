@@ -52,11 +52,11 @@ You can remove everything the installer created in two ways:
 
 1. **Recommended** – run the provided helper script (asks for confirmation, handles all clean‑up automatically):
    ```bash
-   curl fsSL https://raw.githubusercontent.com/chunw4h/juiceit/refs/heads/main/uninstall_orange.sh
+   curl https://raw.githubusercontent.com/chunw4h/juiceit/refs/heads/main/uninstall_orange.sh
    ```
    Add `--force` to skip the prompts:
    ```bash
-   curl fsSL https://raw.githubusercontent.com/chunw4h/juiceit/refs/heads/main/uninstall_orange.sh --force
+   curl https://raw.githubusercontent.com/chunw4h/juiceit/refs/heads/main/uninstall_orange.sh --force
    ```
 
 2. **Manual** – the original steps (kept for reference):
