@@ -38,9 +38,11 @@ ask() {
 # Parse flags
 # -----------------------------------------------------------------
 FORCE=0
++SKIP_CONDA=0               # optional: skip any conda‑related work
 while (( $# )); do
     case "$1" in
         --force) FORCE=1 ;;
+        --skip-conda) SKIP_CONDA=1 ;;   # user can add this flag if desired
         *) echo "Unknown flag: $1" >&2; exit 1 ;;
     esac
     shift
@@ -55,6 +57,30 @@ APP_PATH="${HOME}/Applications/Orange3.app"
 DESKTOP_LINK="${HOME}/Desktop/Orange3"
 SETUP_LOG="${HOME}/Library/Logs/Orange3_Course_setup.log"
 LAUNCH_LOG="${HOME}/Library/Logs/Orange3_Course_launch.log"
+
++# -----------------------------------------------------------------
++# Make sure `conda` is ready (source the Miniconda activation script
++# if the sandbox still exists) and accept the default channel TOS.
++# -----------------------------------------------------------------
++if (( SKIP_CONDA == 0 )); then
++    if [[ -f "${MINICONDA_DIR}/etc/profile.d/conda.sh" ]]; then
++        # shellcheck source=/dev/null
++        . "${MINICONDA_DIR}/etc/profile.d/conda.sh"
++    fi
++
++    # If `conda` is still not found, just warn – the env‑removal block
++    # will be skipped later.
++    if command -v conda >/dev/null 2>&1; then
++        # Accept the default channels non‑interactively.  The `--override-channels`
++        # flag is required when we are not in an interactive shell.
++        conda tos accept --override-channels --channel "https://repo.anaconda.com/pkgs/main"  || true
++        conda tos accept --override-channels --channel "https://repo.anaconda.com/pkgs/r"     || true
++    else
++        echo "Warning: conda command not found – conda‑related steps will be skipped."
++        SKIP_CONDA=1
++    fi
++fi
++
 
 # -----------------------------------------------------------------
 # Begin uninstallation
