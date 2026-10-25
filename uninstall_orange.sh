@@ -90,7 +90,8 @@ msg "Starting Orange3 uninstallation…"
 # 1️⃣ Conda environment
 if conda env list | grep -qE "^${ENV_NAME}[[:space:]]"; then
     if (( FORCE )) || ask "Remove Conda environment '${ENV_NAME}'?" y; then
-        conda env remove -n "${ENV_NAME}"
+        # `-y` forces Conda to accept the removal without prompting.
+        conda env remove -n "${ENV_NAME}" -y
         msg "Conda environment '${ENV_NAME}' removed."
     else
         msg "Skipped Conda environment removal."
