@@ -15,13 +15,25 @@ set -euo pipefail   # abort on error, treat unset vars as errors, fail pipelines
 # -----------------------------------------------------------------
 msg() { printf "\n%s\n" "$*"; }
 ask() {
-    # $1 = question, $2 = default (y/n)
-    local default="${2:-y}"
-    local prompt="[${default^^}]"
+    # $1 = prompt text, $2 = default answer (y or n, default is y)
+    local default reply prompt
+
+    default="${2:-y}"               # default answer if caller omits it
+    # Build a nice prompt: [Y/n] if default is y, otherwise [y/N]
+    if [[ "$default" =~ ^[Yy]$ ]]; then
+        prompt="[Y/n]"
+    else
+        prompt="[y/N]"
+    fi
+
+    # Ask the user; if they just press <Enter>, use the default answer
     read -r -p "$(printf "%s %s " "$1" "$prompt")" reply
     reply="${reply:-$default}"
+
+    # Return true for “yes”, false otherwise (case‑insensitive)
     [[ "$reply" =~ ^[Yy]$ ]]
 }
+
 # -----------------------------------------------------------------
 # Parse flags
 # -----------------------------------------------------------------
