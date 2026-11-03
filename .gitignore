@@ -1,5 +1,5 @@
-.DS_Store
-"Script_Drafts"
-install_orange-old.sh
-install_orange-interactive.sh
-Project-Roadmap.md
+.DS_Store # ignores macOS .ds store thingy
+Script_Drafts/ #ignores script drafts, unneeded in repo
+install_orange-old.sh # ignore old script
+install_orange-interactive.sh # ignore interactive, phased out
+Project-Roadmap.md # dont need a roadmap in there
