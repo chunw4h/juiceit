@@ -1,109 +1,84 @@
 #!/usr/bin/env bash
-# uninstall_orange.sh – safe removal of the Orange3 course installation
-# --------------------------------------------------------------
-#  * removes the conda env "orange3"
-#  * deletes the sandboxed Miniconda folder in $HOME
-#  * removes the native .app bundle (if it contains the installer marker)
-#  * removes the Desktop shortcut and the two log files
-#  * --force  : run non‑interactively (no prompts)
-# --------------------------------------------------------------
+# uninstall_orange.sh – remove everything install_orange.sh created.
+#
+# Usage: bash uninstall_orange.sh [--force]
+#   --force  Skip all confirmation prompts.
 
-set -euo pipefail   # abort on error, treat unset vars as errors, fail pipelines
+set -euo pipefail
 
-# -----------------------------------------------------------------
-# Helpers
-# -----------------------------------------------------------------
-msg() { printf "\n%s\n" "$*"; }
+ENV_NAME="orange3"
+MINICONDA_DIR="$HOME/miniconda3"
+MARKER=".juiceit-launcher"
+DESKTOP_LINK="$HOME/Desktop/Orange3"
+SETUP_LOG="$HOME/Library/Logs/Orange3_Course_setup.log"
+LAUNCH_LOG="$HOME/Library/Logs/Orange3_Course_launch.log"
+
+FORCE=0
+
+msg() { printf '\n%s\n' "$*"; }
+
+usage() {
+    cat <<'EOF'
+Usage: bash uninstall_orange.sh [--force]
+
+  (default)   Ask before removing each item.
+  --force     Remove everything without prompting.
+  -h, --help  Show this help.
+EOF
+}
+
+# Ask a yes/no question. Reads from the terminal, not stdin, so this works
+# when the script is piped (`curl ... | bash`). Falls back to the default
+# answer when no terminal is available.
 ask() {
-    # $1 = prompt text, $2 = default answer (y or n, default is y)
-    local default reply prompt
+    local prompt="$1" default="${2:-y}" hint reply
 
-    default="${2:-y}"               # default answer if caller omits it
-    # Build a nice prompt: [Y/n] if default is y, otherwise [y/N]
-    if [[ "$default" =~ ^[Yy]$ ]]; then
-        prompt="[Y/n]"
-    else
-        prompt="[y/N]"
+    if (( FORCE )); then
+        return 0
     fi
 
-    # Ask the user; if they just press <Enter>, use the default answer
-    read -r -p "$(printf "%s %s " "$1" "$prompt")" reply
+    if [ "$default" = "y" ]; then hint="[Y/n]"; else hint="[y/N]"; fi
+
+    printf '%s %s ' "$prompt" "$hint"
+    if ! read -r reply 2>/dev/null < /dev/tty; then
+        reply="$default"
+    fi
     reply="${reply:-$default}"
 
-    # Return true for “yes”, false otherwise (case‑insensitive)
     [[ "$reply" =~ ^[Yy]$ ]]
 }
 
-# -----------------------------------------------------------------
-# Parse flags
-# -----------------------------------------------------------------
-FORCE=0
-+SKIP_CONDA=0               # optional: skip any conda‑related work
-while (( $# )); do
-    case "$1" in
+# --- Flags -------------------------------------------------------------------
+
+for arg in "$@"; do
+    case "$arg" in
         --force) FORCE=1 ;;
-        --skip-conda) SKIP_CONDA=1 ;;   # user can add this flag if desired
-        *) echo "Unknown flag: $1" >&2; exit 1 ;;
+        -h|--help) usage; exit 0 ;;
+        *) echo "Unknown option: $arg" >&2; usage >&2; exit 1 ;;
     esac
-    shift
 done
 
-# -----------------------------------------------------------------
-# Paths & constants
-# -----------------------------------------------------------------
-ENV_NAME="orange3"
-MINICONDA_DIR="${HOME}/miniconda3"
-APP_PATH="${HOME}/Applications/Orange3.app"
-DESKTOP_LINK="${HOME}/Desktop/Orange3"
-SETUP_LOG="${HOME}/Library/Logs/Orange3_Course_setup.log"
-LAUNCH_LOG="${HOME}/Library/Logs/Orange3_Course_launch.log"
+# --- Uninstall ---------------------------------------------------------------
 
-+# -----------------------------------------------------------------
-+# Make sure `conda` is ready (source the Miniconda activation script
-+# if the sandbox still exists) and accept the default channel TOS.
-+# -----------------------------------------------------------------
-+if (( SKIP_CONDA == 0 )); then
-+    if [[ -f "${MINICONDA_DIR}/etc/profile.d/conda.sh" ]]; then
-+        # shellcheck source=/dev/null
-+        . "${MINICONDA_DIR}/etc/profile.d/conda.sh"
-+    fi
-+
-+    # If `conda` is still not found, just warn – the env‑removal block
-+    # will be skipped later.
-+    if command -v conda >/dev/null 2>&1; then
-+        # Accept the default channels non‑interactively.  The `--override-channels`
-+        # flag is required when we are not in an interactive shell.
-+        conda tos accept --override-channels --channel "https://repo.anaconda.com/pkgs/main"  || true
-+        conda tos accept --override-channels --channel "https://repo.anaconda.com/pkgs/r"     || true
-+    else
-+        echo "Warning: conda command not found – conda‑related steps will be skipped."
-+        SKIP_CONDA=1
-+    fi
-+fi
-+
-
-# -----------------------------------------------------------------
-# Begin uninstallation
-# -----------------------------------------------------------------
 msg "Starting Orange3 uninstallation…"
 
-# 1️⃣ Conda environment
-if conda env list | grep -qE "^${ENV_NAME}[[:space:]]"; then
-    if (( FORCE )) || ask "Remove Conda environment '${ENV_NAME}'?" y; then
-        # `-y` forces Conda to accept the removal without prompting.
-        conda env remove -n "${ENV_NAME}" -y
-        msg "Conda environment '${ENV_NAME}' removed."
+# 1) Conda environment (removing the directory is what `conda env remove` does,
+#    without needing conda, ToS acceptance, or a sourced shell).
+if [ -d "$MINICONDA_DIR/envs/$ENV_NAME" ]; then
+    if ask "Remove Conda environment '$ENV_NAME'?"; then
+        rm -rf "$MINICONDA_DIR/envs/$ENV_NAME"
+        msg "Conda environment '$ENV_NAME' removed."
     else
         msg "Skipped Conda environment removal."
     fi
 else
-    msg "No conda environment named '${ENV_NAME}' – nothing to remove."
+    msg "No conda environment named '$ENV_NAME' – nothing to remove."
 fi
 
-# 2️⃣ Miniconda sandbox
-if [[ -d "${MINICONDA_DIR}" ]]; then
-    if (( FORCE )) || ask "Delete sandbox Miniconda at '${MINICONDA_DIR}'?" y; then
-        rm -rf "${MINICONDA_DIR}"
+# 2) Miniconda sandbox
+if [ -d "$MINICONDA_DIR" ]; then
+    if ask "Delete sandbox Miniconda at '$MINICONDA_DIR'?"; then
+        rm -rf "$MINICONDA_DIR" || msg "Could not fully remove $MINICONDA_DIR."
         msg "Miniconda sandbox removed."
     else
         msg "Skipped Miniconda removal."
@@ -112,26 +87,30 @@ else
     msg "No Miniconda sandbox found – nothing to remove."
 fi
 
-# 3️⃣ .app bundle (only if it was created by the installer)
-if [[ -d "${APP_PATH}" ]]; then
-    if [[ -f "${APP_PATH}/.juiceit-launcher" ]]; then
-        if (( FORCE )) || ask "Delete Orange3.app at '${APP_PATH}'?" y; then
-            rm -rf "${APP_PATH}"
-            msg "Orange3.app removed."
+# 3) .app bundle (installer prefers /Applications, falls back to ~/Applications)
+for APP_PATH in "$HOME/Applications/Orange3.app" "/Applications/Orange3.app"; do
+    if [ ! -d "$APP_PATH" ]; then
+        continue
+    fi
+    if [ ! -e "$APP_PATH/$MARKER" ]; then
+        msg "Found $APP_PATH but it does not contain the installer marker – left untouched."
+        continue
+    fi
+    if ask "Delete Orange3.app at '$APP_PATH'?"; then
+        if rm -rf "$APP_PATH" 2>/dev/null; then
+            msg "Orange3.app removed from $APP_PATH."
         else
-            msg "Skipped deletion of '${APP_PATH}'."
+            msg "Could not remove $APP_PATH – re-run with sudo."
         fi
     else
-        msg "Found ${APP_PATH} but it does not contain the installer marker – left untouched."
+        msg "Skipped deletion of '$APP_PATH'."
     fi
-else
-    msg "No Orange3.app bundle found."
-fi
+done
 
-# 4️⃣ Desktop shortcut
-if [[ -L "${DESKTOP_LINK}" ]]; then
-    if (( FORCE )) || ask "Remove Desktop shortcut?" y; then
-        rm -f "${DESKTOP_LINK}"
+# 4) Desktop shortcut
+if [ -L "$DESKTOP_LINK" ]; then
+    if ask "Remove Desktop shortcut?"; then
+        rm -f "$DESKTOP_LINK"
         msg "Desktop shortcut removed."
     else
         msg "Skipped Desktop shortcut removal."
@@ -140,17 +119,17 @@ else
     msg "No Desktop shortcut present."
 fi
 
-# 5️⃣ Log files
-for LOG in "${SETUP_LOG}" "${LAUNCH_LOG}"; do
-    if [[ -f "${LOG}" ]]; then
-        if (( FORCE )) || ask "Delete log file '${LOG}'?" y; then
-            rm -f "${LOG}"
-            msg "Log file '${LOG}' deleted."
+# 5) Log files
+for LOG in "$SETUP_LOG" "$LAUNCH_LOG"; do
+    if [ -f "$LOG" ]; then
+        if ask "Delete log file '$LOG'?"; then
+            rm -f "$LOG"
+            msg "Log file '$LOG' deleted."
         else
-            msg "Skipped log file '${LOG}'."
+            msg "Skipped log file '$LOG'."
         fi
     else
-        msg "Log file '${LOG}' not found."
+        msg "Log file '$LOG' not found."
     fi
 done
 
