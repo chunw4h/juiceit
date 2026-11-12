@@ -4,13 +4,14 @@
 ## Table of Contents
 - [Before you begin](#before-you-begin)
 - [Installation (single step)](#installation-single-step)
+- [Options](#options)
 - [Launching Orange](#launching-orange)
 - [Troubleshooting](#troubleshooting)
 - [Uninstallation](#uninstallation)
 
 ## Before you begin
 - Connect to power & a stable internet connection.
-- Expect 10-20 min for a full install.
+- Expect 10–30 min for a full install.
 - **Do not** download or install anything manually; the script does it all.
 - The installer runs `conda tos accept` automatically.
 
@@ -19,16 +20,24 @@ Run the command below (you can re‑run it safely if interrupted):
 ```bash
 curl -fsSL https://raw.githubusercontent.com/chunw4h/juiceit/refs/heads/main/install_orange.sh | bash
 ```
+## Options
+When piping the script, pass options with bash -s --:
+```bash
+# Rebuild the environment from scratch
+curl -fsSL https://raw.githubusercontent.com/chunw4h/juiceit/refs/heads/main/install_orange.sh | bash -s -- --reset
+
+# Show live command output (also logged)
+curl -fsSL https://raw.githubusercontent.com/chunw4h/juiceit/refs/heads/main/install_orange.sh | bash -s -- --verbose
+```
+If you downloaded the script instead, run bash install_orange.sh --reset.
 
 ## Launching Orange
-Open Spotlight (⌘ Space), type Orange3, and press Return.
+Open Spotlight (⌘ Space), type Orange3, and press Return.
 The first launch may take 30–60s.
+The installer places Orange3.app in /Applications when that folder is writable, and in ~/Applications otherwise.
 
 Terminal alternative:
-
-
 ```bash
-
 source "$HOME/miniconda3/etc/profile.d/conda.sh"
 conda activate orange3
 python -m Orange.canvas
@@ -36,8 +45,6 @@ python -m Orange.canvas
 
 ## Troubleshooting
 Installation appears frozen – wait up to 30 min. If still stuck, run:
-
-
 ```bash
 tail -n 30 "$HOME/Library/Logs/Orange3_Course_setup.log"
 ```
@@ -46,6 +53,9 @@ and share the output with your instructor.
 **Add‑ons missing** – close Orange, relaunch via Spotlight.
 
 **Environment broken** – re‑run with --reset.
+```bash
+curl -fsSL https://raw.githubusercontent.com/chunw4h/juiceit/refs/heads/main/install_orange.sh | bash -s -- --reset
+```
 
 ## Uninstallation (end of semester)
 You can remove everything the installer created in two ways:
